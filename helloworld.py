@@ -1,12 +1,12 @@
 import discord
 from discord.ext import commands
-import os
 
 # Credentials
 
 TOKEN = open("token.txt", "r").read()
 
 # Creating the Bot + command prefix
+bot = discord.Client()
 bot = commands.Bot(command_prefix='!')
 
 
@@ -21,6 +21,7 @@ async def on_ready():
 @bot.command()
 async def hello_world(msg):
     await msg.send("Hello World!")
+
 
 # Running the bot
 bot.run(TOKEN)
