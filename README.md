@@ -37,5 +37,5 @@ The initial planned features & commands include:
 - `!stop:` stops playing current song or audio<p>
 
 # How to Install
-For developers, it is necessary to install Python 3.0, discord.py, and youtube_dl. Once the project is completed, a user will only need to be in the discord server to utilize the jukebot.
+For developers, it is necessary to install Python 3.9, discord.py, and youtube_dl. Once the project is completed, a user will only need to be in the discord server to utilize the jukebot.
 
