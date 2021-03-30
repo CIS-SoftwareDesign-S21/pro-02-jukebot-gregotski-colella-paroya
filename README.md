@@ -28,7 +28,7 @@ Persona #3:
 
 Danny, age 22, is currently a gaming-streamer on Twitch living in Seattle, Washington. He has gained a significant following these past few months and uses Discord to keep his subscribers in the loop for when he's planning on streaming next. He enjoys holding monthly Discord nights with his friends and followers, where they can play games and listen to music together. 
 
-For his next Discord night, Danny's been wanting to intergrate a music bot for playing music in his server. He's excited to try out JukeBot, he has been looking for a reliable music bot for when they have listening parties or just streaming music in the background of their game nights. 
+For his next Discord night, Danny's been wanting to integrate a music bot for playing music in his server. He's excited to try out JukeBot, he has been looking for a reliable music bot for when they have listening parties or just streaming music in the background of their game nights. 
 
 # Initially Planned Features
 The initial planned features & commands include:
