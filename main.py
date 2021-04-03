@@ -1,13 +1,19 @@
 import discord
-
-from discord.ext import commands
+from discord.ext import commands,tasks
 import os
+from dotenv import load_dotenv
+import youtube_dl
 
+from music_commands.play import YTDLSources
+
+load_dotenv()
 TOKEN = open("token.txt", "r").read()
-
 bot = commands.Bot(command_prefix='!')
+intents = discord.Intents().all()
+client = discord.Client(intents=intents)
 
 if __name__ == '__main__':
+
     for filename in os.listdir('./music_commands'):
         try:
             # loading the different commands but skips __init__ since it's just blank
