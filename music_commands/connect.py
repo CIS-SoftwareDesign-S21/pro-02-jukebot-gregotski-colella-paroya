@@ -11,14 +11,11 @@ class connect(commands.Cog):
         # in channel to connect the bot)
         @bot.command(name='connect')
         async def connect(msg):
-            connected = msg.author.voice.channel
-            if not connected:
-                await msg.send("Please connect to a voice channel to use this command!")
-            await connected.connect()
-        # if connected:
-        #     await connected.connect()
-        # else:
-        #     await msg.send("You need to be connected to a voice channel to use this command!")
+            if(msg.author.voice):
+                connected = msg.author.voice.channel
+                await connected.connect()
+            else:
+                await msg.send("Please connect to a voice channel to use this command.")
 
 
 def setup(bot):
