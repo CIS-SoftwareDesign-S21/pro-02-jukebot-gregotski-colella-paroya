@@ -8,9 +8,9 @@ from music_commands.play import YTDLSources
 
 load_dotenv()
 TOKEN = open("token.txt", "r").read()
-bot = commands.Bot(command_prefix='!')
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix='!',intents=intents)
 
 if __name__ == '__main__':
 

@@ -54,79 +54,16 @@ class play(commands.Cog):
         async def play(ctx, url: str):
             connected = ctx.author.voice.channel
             if connected:
-                try:
+              try:
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
                         filename = await YTDLSources.from_url(url, loop=bot.loop)
-                        voice_channel.play(discord.FFmpegOpusAudio(executable="FFMPEG.exe", source=filename))##
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                     await ctx.send('**Now playing:** {}'.format(filename))
-                except:
+              except:
                     await ctx.send("Can't play song")
-
 
 def setup(bot):
     bot.add_cog(play(bot))
 
-    #        server = ctx.message.server
-    #        voice_client = bot.voice_client_in(server)
-    #        player = await voice_client.create_ytdl_player(url, after=lambda: check_queue(server.id))
-    #        players[server.id] = player
-    #        player.start()
-
-    #    songs = asyncio.Queue()
-    #    play_next_song = asyncio.Event()
-
-    #    players = {}
-    #    queues = {}
-
-    #     def check_queue(id):
-    #        if queues[id] != []:
-    #            player = queues[id].pop(0)
-    #            players[id] = player
-    #            player.start()
-
-    #        song = os.path.isfile("song.mp3")
-    #       try:
-    #           if song:
-    #               os.remove("song.mp3")
-    #       except PermissionError:
-    #           await ctx.send("Enter !stop to stop")
-    #           return
-
-    #    voice_channel = discord.utils.get(ctx.voice_client, name='General')
-
-    #   voice = discord.utils.get(voice_channel, guild=ctx.guild)
-
-    #   ydl_opts = {
-    #       'format': 'bestaudio/best',
-    #       'postprocessors': [{
-    #           'key': 'FFmpegExtractAudio',
-    #           'preferredcodec': 'mp3',
-    #           'preferredequality': '192'
-    #       }]
-    #   }
-    #   with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #       ydl.download([url])
-    #   for file in os.listdir("./"):
-    #       if file.endswith(".mp3"):
-    #           os.rename(file, "song.mp3")
-    #   voice.play(discord.FFmpegPCMAudio("song.mp3"))
-
-    #    try:
-    #        server = ctx.message
-    #        voice_client = bot.voice_client_in(server)
-    #        player = await voice_client.create_ytdl_player(url)
-    #        #  players[server.id] = player
-    #        player.start()
-    #    except:
-    #        await ctx.send("The bot is not connected to a voice channel.")
-
-    # audio = os.path.isfile("song.mp3")
-    #  voiceChannel = discord.utils.get(msg.guild.voice_channels,name="General")
-    #    await msg.play(msg, url)
-    # server = msg.message
-    # voice_client = bot.voice_client_in(server)
-    # player = await voice_client.create_ytdl_player(url)
-    #  players[server.id] = player
-    # player.start()
