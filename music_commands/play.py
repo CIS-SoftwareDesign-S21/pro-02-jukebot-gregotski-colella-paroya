@@ -65,17 +65,12 @@ class play(commands.Cog):
                     await ctx.send('**Now playing:** {}'.format(filename))
               except:
                     await ctx.send("Can't play song")
-<<<<<<< HEAD
+
       #        if self.queue:
       #            print (len(self.queue))
       #            print (self.queue[0])
       #            await play(self.queue.popleft())
-=======
-              if self.queue:
-                  print (len(add.queue))
-                  print (add.queue[0])
-                  await play(add.queue.popleft())
->>>>>>> 2f0f1a1cec26c24b4be4e151d901e406710ed4d8
+
 
 
 def setup(bot):
