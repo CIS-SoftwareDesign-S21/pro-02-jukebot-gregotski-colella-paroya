@@ -51,21 +51,22 @@ class MusicCommands(commands.Cog):
         @bot.command(name='play', help='Plays song')
         async def play(ctx, url: str):
             connected = ctx.author.voice.channel
-            if connected:
-                try:
-                    server = ctx.message.guild
-                    voice_channel = server.voice_client
-                    async with ctx.typing():
-                        filename = await YTDLSources.from_url(url, loop=bot.loop)
-                        voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                    await ctx.send('**Now playing:** {}'.format(filename))
-                except:
-                    await ctx.send("Can't play song")
+            self.queue.appendleft(url)
+            for s in self.queue:
+                print(s)
+            while len(self.queue) > 0:
+                if connected:
+                    try:
+                        server = ctx.message.guild
+                        voice_channel = server.voice_client
+                        async with ctx.typing():
+                            filename = await YTDLSources.from_url(self.queue.popleft(), loop=bot.loop)
+                            voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+                        await ctx.send('**Now playing:** {}'.format(filename))
+                    except:
+                        await ctx.send("Can't play song")
 
-                #if self.queue:
-                    #print(len(self.queue))
-                    #print(self.queue[0])
-                    #await play(self.queue.popleft())
+
 
         @bot.command(name='pause', help='Pauses currently playing song')
         async def pause(ctx):
