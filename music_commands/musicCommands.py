@@ -49,9 +49,11 @@ class MusicCommands(commands.Cog):
         self.queue = deque()
 
         @bot.command(name='play', help='Plays song')
-        async def play(ctx, url: str):
+        async def play(ctx, url: str=None):
             connected = ctx.author.voice.channel
-            self.queue.appendleft(url)
+            if url is not None:
+                self.queue.appendleft(url)
+
             for s in self.queue:
                 print(s)
             while len(self.queue) > 0:
