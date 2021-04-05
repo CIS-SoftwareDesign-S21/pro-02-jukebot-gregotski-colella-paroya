@@ -5,6 +5,7 @@ from collections import deque
 class add(commands.Cog):
     # Initialization
     def __init__(self, bot):
+        super()
         self.bot = bot
         self.queue = deque()
 
