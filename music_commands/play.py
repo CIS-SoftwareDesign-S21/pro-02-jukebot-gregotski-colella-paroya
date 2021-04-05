@@ -59,7 +59,7 @@ class play(commands.Cog):
                     voice_channel = server.voice_client
                     async with ctx.typing():
                         filename = await YTDLSources.from_url(url, loop=bot.loop)
-                        voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                     await ctx.send('**Now playing:** {}'.format(filename))
               except:
                     await ctx.send("Can't play song")

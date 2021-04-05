@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 
-
 class connect(commands.Cog):
     # Initialization
     def __init__(self, bot):
