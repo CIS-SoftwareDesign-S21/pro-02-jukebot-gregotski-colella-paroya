@@ -14,6 +14,7 @@ class add(commands.Cog):
 
             if connected:
                 self.queue.append(url)
+                await ctx.send("Song added to queue")
                 return
             else:
                 await ctx.send("Could not add song to queue")

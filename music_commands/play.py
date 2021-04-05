@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 import os
 from dotenv import load_dotenv
 import youtube_dl
+from collections import deque
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -63,6 +64,11 @@ class play(commands.Cog):
                     await ctx.send('**Now playing:** {}'.format(filename))
               except:
                     await ctx.send("Can't play song")
+              if self.queue:
+                  print (len(self.queue))
+                  print (self.queue[0])
+                  await play(self.queue.popleft())
+
 
 def setup(bot):
     bot.add_cog(play(bot))
