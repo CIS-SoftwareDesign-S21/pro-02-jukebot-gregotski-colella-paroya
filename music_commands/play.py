@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
+from music_commands import add
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -65,9 +66,9 @@ class play(commands.Cog):
               except:
                     await ctx.send("Can't play song")
               if self.queue:
-                  print (len(self.queue))
-                  print (self.queue[0])
-                  await play(self.queue.popleft())
+                  print (len(add.queue))
+                  print (add.queue[0])
+                  await play(add.queue.popleft())
 
 
 def setup(bot):
