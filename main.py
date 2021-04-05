@@ -2,9 +2,8 @@ import discord
 from discord.ext import commands, tasks
 import os
 from dotenv import load_dotenv
-import youtube_dl
 
-from music_commands.play import YTDLSources
+
 
 load_dotenv()
 TOKEN = open("token.txt", "r").read()
