@@ -44,6 +44,7 @@ class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
 
 
 class MusicCommands(commands.Cog):
+
     def __init__(self, bot):
         self.bot = bot
         self.queue = deque()
@@ -62,9 +63,12 @@ class MusicCommands(commands.Cog):
                         server = ctx.message.guild
                         voice_channel = server.voice_client
                         async with ctx.typing():
-                            filename = await YTDLSources.from_url(self.queue.popleft(), loop=bot.loop)
-                            voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+                            filename = await YTDLSources.from_url(self.queue[0],loop=bot.loop)#self.queue.popleft(), loop=bot.loop)
+                            voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                           # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                         await ctx.send('**Now playing:** {}'.format(filename))
+                       # await ctx.send(f'**Now playing:** {filename.title}')
+                        del(self.queue[0])
                     except:
                         await ctx.send("Can't play song")
 
@@ -108,6 +112,7 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("Could not add song to queue")
 
+
         @bot.command(name='volume', help='Changes volume of currently playing')
         async def volume(ctx, volume: int):
             if ctx.voice_client is None:
@@ -122,7 +127,7 @@ class MusicCommands(commands.Cog):
             elif ctx.voice_client is not None:
                 if volume in range(0, 201):
                     try:
-                        ctx.voice_client.source.volume = volume / 100
+                        ctx.voice_client.source.volume = float(volume) / 100
 
                         embed = discord.Embed(
                             title='Volume',
@@ -143,6 +148,7 @@ class MusicCommands(commands.Cog):
                     )
 
                     return await ctx.send(embed=embed)
+
 
 
 def setup(bot):
