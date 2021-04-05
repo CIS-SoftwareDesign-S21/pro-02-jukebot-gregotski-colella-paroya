@@ -48,7 +48,7 @@ class MusicCommands(commands.Cog):
         self.bot = bot
         self.queue = deque()
 
-        @commands.command(name='play')
+        @commands.command(name='play', help='Plays song')
         async def play(ctx, url: str):
             connected = ctx.author.voice.channel
             if connected:
@@ -62,12 +62,12 @@ class MusicCommands(commands.Cog):
                 except:
                     await ctx.send("Can't play song")
 
-                if self.queue:
-                    print(len(self.queue))
-                    print(self.queue[0])
-                    await play(self.queue.popleft())
+                #if self.queue:
+                    #print(len(self.queue))
+                    #print(self.queue[0])
+                    #await play(self.queue.popleft())
 
-        @commands.command(name='pause')
+        @commands.command(name='pause', help='Pauses currently playing song')
         async def pause(ctx):
             # try:
             voice_client = ctx.message.guild.voice_client
@@ -78,7 +78,7 @@ class MusicCommands(commands.Cog):
             # except:
             await ctx.send("Can't stop playing song")
 
-        @commands.command(name='resume')
+        @commands.command(name='resume', help='Continues playing paused song')
         async def resume(ctx):
             voice_client = ctx.message.guild.voice_client
             if voice_client.is_paused():
@@ -94,8 +94,8 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("The bot is not playing anything at the moment.")
 
-        @commands.command(name='add')
-        async def addSong(ctx, url: str):
+        @commands.command(name='add', help='Add songs to queue of songs')
+        async def add(ctx, url: str):
             connected = ctx.author.voice.channel
 
             if connected:
@@ -105,7 +105,7 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("Could not add song to queue")
 
-        @commands.command(name='volume')
+        @commands.command(name='volume', help='Changes volume of currently playing')
         async def volume(ctx, volume: int):
             if ctx.voice_client is None:
                 embed = discord.Embed(
