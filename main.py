@@ -2,7 +2,8 @@ import discord
 from discord.ext import commands, tasks
 import os
 from dotenv import load_dotenv
-
+from music_commands import musicCommands
+from music_commands import serverCommands
 load_dotenv()
 TOKEN = open("token.txt", "r").read()
 intents = discord.Intents().all()
