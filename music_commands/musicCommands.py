@@ -51,27 +51,61 @@ class MusicCommands(commands.Cog):
         self.history = deque()
 
         @bot.command(name='play', help='Plays a song')
-        async def play(ctx, url: str=None):
+        async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
             if url is not None:
                 self.queue.appendleft(url)
                 self.history.append(url)
 
+            #   for s in self.queue:
+            #       print(s)
+            #    while len(self.queue) > 0:
             if connected:
                 try:
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
-                        filename = await YTDLSources.from_url(self.queue[0],loop=bot.loop)#self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+                        filename = await YTDLSources.from_url(self.queue[0],
+                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
+                                                   source=filename))
+                        filename = await YTDLSources.from_url(self.queue[0],
+                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                     await ctx.send('**Now playing:** {}'.format(filename))
                     # await ctx.send(f'**Now playing:** {filename.title}')
-                    del(self.queue[0])
+                    del (self.queue[0])
                 except:
                     await ctx.send("Can't play song")
 
+        @bot.command(name='view', help='Shows the queue')
+        async def view(ctx):
+            x = 0
+            try:
+                if len(self.queue) == 0:
+                    await ctx.send("Your queue is currently empty")
+                else:
+                    while x <= len(self.queue):
+                        filename = await YTDLSources.from_url(self.queue[x],
+                                                              loop=bot.loop)
+                        await ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
+                        x += 1
+            except:
+                pass
 
+        @bot.command(name='remove', help='Removes song from queue')
+        async def remove(ctx, number):
+            try:
+                if len(self.queue) != 0:
+                    del (self.queue[int(number)])
+                    await ctx.send("Song was deleted from queue")
+                else:
+                    await ctx.send("Queue is currently empty")
+            except:
+                pass
 
         @bot.command(name='pause', help='Pauses currently playing song')
         async def pause(ctx):
@@ -111,7 +145,6 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("Could not add song to queue")
 
-
         @bot.command(name='volume', help='Changes volume of currently playing')
         async def volume(ctx, volume: int):
             if ctx.voice_client is None:
@@ -147,7 +180,6 @@ class MusicCommands(commands.Cog):
                     )
 
                     return await ctx.send(embed=embed)
-
 
 
 def setup(bot):
