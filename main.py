@@ -9,8 +9,7 @@ TOKEN = open("token.txt", "r").read()
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
-status = ['Taylor Swift','Harry Styles','Gucci Mane']
-
+status = ['Taylor Swift', 'Harry Styles', 'Gucci Mane']
 
 if __name__ == '__main__':
 
@@ -27,9 +26,11 @@ if __name__ == '__main__':
             print(error)
     print("Commands successfully loaded!")
 
+
 @tasks.loop(seconds=20)
 async def change_status():
     await bot.change_presence(activity=discord.Game(choice(status)))
+
 
 @bot.event
 async def on_ready():
@@ -44,12 +45,11 @@ async def on_ready():
                 await channel.send("jukebox.gif")
         print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
 
+
 @bot.event
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name='general')
     await channel.send(f'Welcome {member.mention}! Ready to jam out? See !help command for details!')
-
-
 
 
 bot.run(TOKEN)

@@ -71,11 +71,25 @@ class MusicCommands(commands.Cog):
                         voice_channel.play(
                             discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
-                    await ctx.send('**Now playing:** {}'.format(filename))
-                    # await ctx.send(f'**Now playing:** {filename.title}')
+                    await ctx.send('**Now playing:** {}'.format(filename))                        # await ctx.send(f'**Now playing:** {filename.title}')
                     del (self.queue[0])
                 except:
                     await ctx.send("Can't play song")
+
+        @bot.command(name='view', help='Shows the queue')
+        async def view(ctx):
+            x = 0
+            try:
+                if len(self.queue) == 0:
+                    await ctx.send("Your queue is currently empty")
+                else:
+                    while x <= len(self.queue):
+                        filename = await YTDLSources.from_url(self.queue[x],
+                                                              loop=bot.loop)
+                        await ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
+                        x += 1
+            except:
+                pass
 
         @bot.command(name='pause', help='Pauses currently playing song')
         async def pause(ctx):
@@ -121,8 +135,8 @@ class MusicCommands(commands.Cog):
 
                 playlist = deque(playlist)
 
-               # newPlaylist = deque()
-                #playlist.append(playlist)
+                # newPlaylist = deque()
+                # playlist.append(playlist)
                 self.playlists.append(playlist)
                 await ctx.send("Playlist created!")
             else:
@@ -151,14 +165,15 @@ class MusicCommands(commands.Cog):
                     if self.playlists.__contains__(playlist):
                         num = self.playlists.index(playlist)
                         async with ctx.typing():
-                            filename = await YTDLSources.from_url(self.playlists[num],loop=bot.loop)
-                            voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            filename = await YTDLSources.from_url(self.playlists[num], loop=bot.loop)
+                            voice_channel.play(
+                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         await ctx.send('**Now playing:** {}'.format(filename))
                 except:
                     await ctx.send("Can't play song")
 
         @bot.command(name='removefrom', help='Removes song from playlist')
-        async def removefrom(ctx, playlist:str, number:str):
+        async def removefrom(ctx, playlist: str, number: str):
             try:
                 playlist = deque(playlist)
                 if len(playlist) != 0:
@@ -170,7 +185,7 @@ class MusicCommands(commands.Cog):
                 pass
 
         @bot.command(name='viewplaylist', help='Shows the playlist')
-        async def viewplaylist(ctx,playlist:str):
+        async def viewplaylist(ctx, playlist: str):
             x = 0
             try:
                 playlist = deque(playlist)
