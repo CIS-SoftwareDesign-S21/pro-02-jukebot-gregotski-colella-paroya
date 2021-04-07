@@ -156,8 +156,10 @@ class MusicCommands(commands.Cog):
 
         @bot.command(name='create', help='Creates a playlist')
         async def create(ctx, playlist):
+            if any(playlist in s for s in self.totalPlaylists):
+                await ctx.send("Playlist already exists")
 
-           # if self.totalPlaylists.__contains__(playlist):
+            else:
                 try:
                     self.totalPlaylists.append(playlist)
                     playlist = [playlist]
@@ -166,13 +168,9 @@ class MusicCommands(commands.Cog):
                         playlist.__delitem__(x)
                         x += 1
                     self.playlists.append(playlist)
-
                     await ctx.send("Playlist created!")
-
                 except:
                     await ctx.send("Could not create playlist")
-          #  else:
-          #      await ctx.send("Playlist already exists")
 
         @bot.command(name='addto', help='Add songs to playlist of songs')
         async def addto(ctx, playlist, url: str):
