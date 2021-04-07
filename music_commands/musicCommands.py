@@ -25,6 +25,8 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+# playlists = {}
+
 class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
@@ -48,31 +50,32 @@ class MusicCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queue = deque()
+        self.playlists = deque()
 
         @bot.command(name='play', help='Plays a song')
-        async def play(ctx, url: str=None):
+        async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
             if url is not None:
                 self.queue.appendleft(url)
 
-         #   for s in self.queue:
-         #       print(s)
-        #    while len(self.queue) > 0:
+            #   for s in self.queue:
+            #       print(s)
+            #    while len(self.queue) > 0:
             if connected:
                 try:
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
-                        filename = await YTDLSources.from_url(self.queue[0],loop=bot.loop)#self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        filename = await YTDLSources.from_url(self.queue[0],
+                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                     await ctx.send('**Now playing:** {}'.format(filename))
                     # await ctx.send(f'**Now playing:** {filename.title}')
-                    del(self.queue[0])
+                    del (self.queue[0])
                 except:
                     await ctx.send("Can't play song")
-
-
 
         @bot.command(name='pause', help='Pauses currently playing song')
         async def pause(ctx):
@@ -112,9 +115,56 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("Could not add song to queue")
 
+        @bot.command(name='create', help='Creates a playlist')
+        async def create(ctx, playlist: str):
+            if playlist not in self.playlists:
+
+                playlist = deque(playlist)
+
+               # newPlaylist = deque()
+                playlist.append(playlist)
+                self.playlists.append(playlist)
+                await ctx.send("Playlist created!")
+            else:
+                await ctx.send("Playlist already exists")
+
+        @bot.command(name='addto', help='Add songs to playlist of songs')
+        async def addto(ctx, playlist: str, url: str):
+            connected = ctx.author.voice.channel
+            if connected:
+                playlist = deque(playlist)
+                if playlist in self.playlists:
+                    playlist.append(url)
+                await ctx.send("Song added to playlist")
+                return
+            else:
+                await ctx.send("Could not add song to playlist")
+
+        @bot.command(name='playfrom', help='Play a song from a playlist')
+        async def playfrom(ctx, playlist: str):
+            connected = ctx.author.voice.channel
+            if connected:
+                try:
+                    server = ctx.message.guild
+                    voice_channel = server.voice_client
+                    playlist = deque(playlist)
+                    if self.playlists.__contains__(playlist):
+                        num = self.playlists.index(playlist)
+                        async with ctx.typing():
+                            filename = await YTDLSources.from_url(self.playlists[num],
+                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                            voice_channel.play(
+                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
+                        await ctx.send('**Now playing:** {}'.format(filename))
+                        # await ctx.send(f'**Now playing:** {filename.title}')
+                        #del (self.playlists[num][0])
+                except:
+                    await ctx.send("Can't play song")
 
         @bot.command(name='volume', help='Changes volume of currently playing')
-        async def volume(ctx, volume: int):
+        async def volume(ctx, volume: float):
+            guild_to_audiocontroller = {}
             if ctx.voice_client is None:
                 embed = discord.Embed(
                     title='Error!',
@@ -125,10 +175,17 @@ class MusicCommands(commands.Cog):
                 return await ctx.send(embed=embed)
 
             elif ctx.voice_client is not None:
-                if volume in range(0, 201):
+                if volume in range(0, 100):
                     try:
-                        ctx.voice_client.source.volume = float(volume) / 100
+                        current_guild = ctx.message.guild
+                        if current_guild is None:
+                            await ctx.send_message("No guild")
+                            return
 
+                        guild_to_audiocontroller[current_guild].volume = volume
+                        #   player = get_player(ctx)
+                        #           ctx.voice_client.source.volume = volume / 100
+                        #  player.volume = volume / 100
                         embed = discord.Embed(
                             title='Volume',
                             colour=discord.Colour.blue(),
@@ -148,7 +205,6 @@ class MusicCommands(commands.Cog):
                     )
 
                     return await ctx.send(embed=embed)
-
 
 
 def setup(bot):

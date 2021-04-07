@@ -37,17 +37,19 @@ async def on_ready():
     print("Bot is online!")
     change_status.start()
 
+    for guild in bot.guilds:
+        for channel in guild.text_channels:
+            if str(channel) == "general":
+                await channel.send('Bot Activated..')
+                await channel.send("jukebox.gif")
+        print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
+
 @bot.event
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name='general')
     await channel.send(f'Welcome {member.mention}! Ready to jam out? See !help command for details!')
 
-    #for guild in bot.guilds:
-    #    for channel in guild.text_channels:
-    #        if str(channel) == "general":
-    #            await channel.send('Bot Activated..')
-    #            await channel.send(file='jukebox.gif')
-    #    print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
+
 
 
 bot.run(TOKEN)
