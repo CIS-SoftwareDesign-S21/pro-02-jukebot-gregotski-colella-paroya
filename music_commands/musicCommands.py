@@ -52,6 +52,15 @@ class MusicCommands(commands.Cog):
         self.queue = deque()
         self.playlists = []
         self.totalPlaylists = []
+        self.volume = 0.5
+
+        @property
+        def volume():
+            return self.volume
+
+        @volume.setter
+        def volume(value: float):
+            self.volume = value
 
         @bot.command(name='play', help='Plays a song')
         async def play(ctx, url: str = None):
@@ -248,9 +257,16 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='volume', help='Changes volume of currently playing')
-        async def volume(ctx, volume: float):
-            guild_to_audiocontroller = {}
+        def get_voice_state(ctx: commands.Context):
+            state = self.voice_states.get(ctx.guild.id)
+            if not state:
+                state = VoiceState(self.bot, ctx)
+                self.voice_states[ctx.guild.id] = state
+
+            return state
+
+        @bot.command(name='volume', help='Changes volume of the song that is currently playing')
+        async def volume(ctx, volume: int):
             if ctx.voice_client is None:
                 embed = discord.Embed(
                     title='Error!',
@@ -260,18 +276,12 @@ class MusicCommands(commands.Cog):
 
                 return await ctx.send(embed=embed)
 
-            elif ctx.voice_client is not None:
-                if volume in range(0, 100):
-                    try:
-                        current_guild = ctx.message.guild
-                        if current_guild is None:
-                            await ctx.send_message("No guild")
-                            return
 
-                        guild_to_audiocontroller[current_guild].volume = volume
-                        #   player = get_player(ctx)
-                        #           ctx.voice_client.source.volume = volume / 100
-                        #  player.volume = volume / 100
+            elif ctx.voice_client is not None:
+                if volume in range(0, 201):
+                    try:
+                        ctx.voice_client.source.volume = volume / 100
+
                         embed = discord.Embed(
                             title='Volume',
                             colour=discord.Colour.blue(),
@@ -291,6 +301,7 @@ class MusicCommands(commands.Cog):
                     )
 
                     return await ctx.send(embed=embed)
+
 
 
 def setup(bot):
