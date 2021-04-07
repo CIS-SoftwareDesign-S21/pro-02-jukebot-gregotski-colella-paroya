@@ -122,7 +122,7 @@ class MusicCommands(commands.Cog):
                 playlist = deque(playlist)
 
                # newPlaylist = deque()
-                playlist.append(playlist)
+                #playlist.append(playlist)
                 self.playlists.append(playlist)
                 await ctx.send("Playlist created!")
             else:
@@ -151,16 +151,39 @@ class MusicCommands(commands.Cog):
                     if self.playlists.__contains__(playlist):
                         num = self.playlists.index(playlist)
                         async with ctx.typing():
-                            filename = await YTDLSources.from_url(self.playlists[num],
-                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                            voice_channel.play(
-                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                                # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
+                            filename = await YTDLSources.from_url(self.playlists[num],loop=bot.loop)
+                            voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         await ctx.send('**Now playing:** {}'.format(filename))
-                        # await ctx.send(f'**Now playing:** {filename.title}')
-                        #del (self.playlists[num][0])
                 except:
                     await ctx.send("Can't play song")
+
+        @bot.command(name='removefrom', help='Removes song from playlist')
+        async def removefrom(ctx, playlist:str, number:str):
+            try:
+                playlist = deque(playlist)
+                if len(playlist) != 0:
+                    del (playlist[int(number)])
+                    await ctx.send("Song was deleted from playlist")
+                else:
+                    await ctx.send("Playlist is currently empty")
+            except:
+                pass
+
+        @bot.command(name='viewplaylist', help='Shows the playlist')
+        async def viewplaylist(ctx,playlist:str):
+            x = 0
+            try:
+                playlist = deque(playlist)
+                if len(playlist) == 0:
+                    await ctx.send("Your playlist is currently empty")
+                else:
+                    while x <= len(playlist):
+                        filename = await YTDLSources.from_url(playlist[x],
+                                                              loop=bot.loop)
+                        await ctx.send(f'**Your playlist consists of: ** ' + '[' + str(x) + '] ' + filename + '!')
+                        x += 1
+            except:
+                pass
 
         @bot.command(name='volume', help='Changes volume of currently playing')
         async def volume(ctx, volume: float):
