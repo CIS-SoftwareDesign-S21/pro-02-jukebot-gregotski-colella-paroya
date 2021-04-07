@@ -141,7 +141,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='viewplaylists', help='Shows the queue')
+        @bot.command(name='viewplaylists', help='Shows all created playlists')
         async def viewplaylists(ctx):
             x = 0
             try:
@@ -211,12 +211,26 @@ class MusicCommands(commands.Cog):
         @bot.command(name='removefrom', help='Removes song from playlist')
         async def removefrom(ctx, playlist, number: str):
             try:
-
-                if len(deque(playlist)) != 0:
-                    del (self.playlists[int(number)])
-                    await ctx.send("Song was deleted from playlist")
+                if self.totalPlaylists.__contains__(playlist):
+                    num = self.totalPlaylists.index(playlist)
+                    if len(self.playlists[num]) != 0:
+                        del (self.playlists[num][int(number)])
+                        await ctx.send("Song was deleted from playlist")
                 else:
                     await ctx.send("Playlist is currently empty")
+            except:
+                pass
+
+        @bot.command(name='delete', help='Deletes playlist')
+        async def delete(ctx, playlist):
+            try:
+                if self.totalPlaylists.__contains__(playlist):
+                    num = self.totalPlaylists.index(playlist)
+                    del (self.playlists[num])
+                    del (self.totalPlaylists[num])
+                    await ctx.send("Playlist deleted")
+                else:
+                    await ctx.send("Playlist does not exist")
             except:
                 pass
 
