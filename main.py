@@ -9,8 +9,7 @@ TOKEN = open("token.txt", "r").read()
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
-status = ['Taylor Swift','Harry Styles','Gucci Mane']
-
+status = ['Taylor Swift', 'Harry Styles', 'Gucci Mane']
 
 if __name__ == '__main__':
 
@@ -27,27 +26,32 @@ if __name__ == '__main__':
             print(error)
     print("Commands successfully loaded!")
 
+
 @tasks.loop(seconds=20)
 async def change_status():
     await bot.change_presence(activity=discord.Game(choice(status)))
+
 
 @bot.event
 async def on_ready():
     print("Connected to bot: {}".format(bot.user.name))
     print("Bot is online!")
     change_status.start()
+   # try:
+   #     for guild in bot.guilds:
+   #         for channel in guild.text_channels:
+   #             if str(channel) == "general":
+   #                 await channel.send('Bot Activated..')
+   #                 #await channel.send(file=file, embed=embed)
+   #                 await channel.send("C:/Users/cgreg/OneDrive/Pictures/jukebox.gif")
+   #         print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
+   # except:
+   #     await channel.send("Gif didn't work")
 
 @bot.event
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name='general')
     await channel.send(f'Welcome {member.mention}! Ready to jam out? See !help command for details!')
-
-    #for guild in bot.guilds:
-    #    for channel in guild.text_channels:
-    #        if str(channel) == "general":
-    #            await channel.send('Bot Activated..')
-    #            await channel.send(file='jukebox.gif')
-    #    print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
 
 
 bot.run(TOKEN)
