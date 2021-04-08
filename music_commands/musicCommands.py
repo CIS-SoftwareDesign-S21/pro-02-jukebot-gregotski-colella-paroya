@@ -36,11 +36,12 @@ class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+        title = data['title']
         if 'entries' in data:
             # take first item from a playlist
             data = data['entries'][0]
         filename = data['title'] if stream else ytdl.prepare_filename(data)
-        return filename
+        return filename,  title
 
 
 class MusicCommands(commands.Cog):
@@ -57,6 +58,7 @@ class MusicCommands(commands.Cog):
                 self.queue.appendleft(url)
                 self.history.append(url)
 
+
             #   for s in self.queue:
             #       print(s)
             #    while len(self.queue) > 0:
@@ -65,17 +67,12 @@ class MusicCommands(commands.Cog):
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
-                        filename = await YTDLSources.from_url(self.queue[0],
-                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
-                                                   source=filename))
-                        filename = await YTDLSources.from_url(self.queue[0],
-                                                              loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                     await ctx.send('**Now playing:** {}'.format(filename))
+                    await ctx.send('**Now playing:** {}'.format(title))
                     # await ctx.send(f'**Now playing:** {filename.title}')
                     del (self.queue[0])
                 except:
