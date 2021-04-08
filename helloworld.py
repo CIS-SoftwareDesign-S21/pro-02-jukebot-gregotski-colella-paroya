@@ -5,7 +5,7 @@ from discord.ext import commands
 
 TOKEN = open("token.txt", "r").read()
 
-# Creating the Bot + command prefix
+# Creating the Bot + prefix for command
 bot = discord.Client()
 bot = commands.Bot(command_prefix='!')
 
