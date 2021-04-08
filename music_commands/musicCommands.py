@@ -58,10 +58,6 @@ class MusicCommands(commands.Cog):
                 self.queue.appendleft(url)
                 self.history.append(url)
 
-
-            #   for s in self.queue:
-            #       print(s)
-            #    while len(self.queue) > 0:
             if connected:
                 try:
                     server = ctx.message.guild
@@ -71,9 +67,8 @@ class MusicCommands(commands.Cog):
                         # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
-                    await ctx.send('**Now playing:** {}'.format(filename))
                     await ctx.send('**Now playing:** {}'.format(title))
-                    # await ctx.send(f'**Now playing:** {filename.title}')
+
                     del (self.queue[0])
                 except:
                     await ctx.send("Can't play song")
