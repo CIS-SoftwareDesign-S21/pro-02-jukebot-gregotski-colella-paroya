@@ -37,14 +37,16 @@ async def on_ready():
     print("Connected to bot: {}".format(bot.user.name))
     print("Bot is online!")
     change_status.start()
-
-    for guild in bot.guilds:
-        for channel in guild.text_channels:
-            if str(channel) == "general":
-                await channel.send('Bot Activated..')
-                await channel.send("jukebox.gif")
-        print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
-
+   # try:
+   #     for guild in bot.guilds:
+   #         for channel in guild.text_channels:
+   #             if str(channel) == "general":
+   #                 await channel.send('Bot Activated..')
+   #                 #await channel.send(file=file, embed=embed)
+   #                 await channel.send("C:/Users/cgreg/OneDrive/Pictures/jukebox.gif")
+   #         print('Active in {}\n Member Count : {}'.format(guild.name, guild.member_count))
+   # except:
+   #     await channel.send("Gif didn't work")
 
 @bot.event
 async def on_member_join(member):

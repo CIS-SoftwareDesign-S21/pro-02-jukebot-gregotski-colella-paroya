@@ -54,14 +54,6 @@ class MusicCommands(commands.Cog):
         self.totalPlaylists = []
         self.volume = 0.5
 
-        @property
-        def volume():
-            return self.volume
-
-        @volume.setter
-        def volume(value: float):
-            self.volume = value
-
         @bot.command(name='play', help='Plays a song')
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
@@ -137,6 +129,12 @@ class MusicCommands(commands.Cog):
 
         @bot.command(name='view', help='Shows the queue')
         async def view(ctx):
+
+            embed = discord.Embed(
+                title="Queue:",
+                color=discord.Color.blue()
+            )
+
             x = 0
             try:
                 if len(self.queue) == 0:
@@ -145,10 +143,13 @@ class MusicCommands(commands.Cog):
                     while x <= len(self.queue):
                         filename = await YTDLSources.from_url(self.queue[x],
                                                               loop=bot.loop)
-                        await ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
+                        #add another field for artist, another for song title,another for time
+                        embed.add_field(name="Track", value=filename, inline=True)
+                       # await ctx.send(embed=embed) #ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
                         x += 1
+                    await ctx.send(embed=embed)
             except:
-                pass
+                await ctx.send(embed=embed)
 
         @bot.command(name='viewplaylists', help='Shows all created playlists')
         async def viewplaylists(ctx):
@@ -256,14 +257,6 @@ class MusicCommands(commands.Cog):
                             x += 1
             except:
                 pass
-
-        def get_voice_state(ctx: commands.Context):
-            state = self.voice_states.get(ctx.guild.id)
-            if not state:
-                state = VoiceState(self.bot, ctx)
-                self.voice_states[ctx.guild.id] = state
-
-            return state
 
         @bot.command(name='volume', help='Changes volume of the song that is currently playing')
         async def volume(ctx, volume: int):
