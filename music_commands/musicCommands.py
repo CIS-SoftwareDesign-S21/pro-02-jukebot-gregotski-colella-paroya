@@ -107,7 +107,7 @@ class MusicCommands(commands.Cog):
                 await voice_client.pause()
             else:
                 await ctx.send("The bot is not playing anything at the moment.")
-            # except:
+            # except:#
             await ctx.send("Can't stop playing song")
 
         @bot.command(name='resume', help='Continues playing paused song')
