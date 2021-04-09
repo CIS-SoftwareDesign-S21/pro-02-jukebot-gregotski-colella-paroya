@@ -58,6 +58,12 @@ class MusicCommands(commands.Cog):
         @bot.command(name='play', help='Plays a song')
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
+
+            #check if song is already playing
+            voice_client = ctx.message.guild.voice_client
+            if voice_client.is_playing():
+                voice_client.stop()
+
             if url is not None:
                 if not ("watch?v=" in url):
                     url = helperFunctions.convert_to_link(url)
