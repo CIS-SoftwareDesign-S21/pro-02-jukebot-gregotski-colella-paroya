@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
 import helperFunctions
+import helpMessages
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -54,22 +55,26 @@ class MusicCommands(commands.Cog):
         self.playlists = []
         self.totalPlaylists = []
 
-
-        @bot.command(name='play', help='Plays a song')
+        @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
 
-            #check if song is already playing
+            # check if song is already playing
             voice_client = ctx.message.guild.voice_client
             if voice_client.is_playing():
                 voice_client.stop()
 
+            # if argument given
             if url is not None:
+                # if argument not a youtube link, convert
                 if not ("watch?v=" in url):
                     url = helperFunctions.convert_to_link(url)
+                    # if converting to youtube link was unsuccessful
                     if not ("watch?v=" in url):
                         await ctx.send("Can't find result from Youtube")
                         return
+
+                # add url to queue and history list
                 self.queue.appendleft(url)
                 self.history.append(url)
 
@@ -78,7 +83,8 @@ class MusicCommands(commands.Cog):
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
-                        filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
+                        filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
+                        # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
                         # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
@@ -88,7 +94,7 @@ class MusicCommands(commands.Cog):
                 except:
                     await ctx.send("Can't play song")
 
-        @bot.command(name='view', help='Shows the queue')
+        @bot.command(name='view', help=helpMessages.VIEW)
         async def view(ctx):
 
             embed = discord.Embed(
@@ -111,7 +117,7 @@ class MusicCommands(commands.Cog):
             except:
                 await ctx.send(embed=embed)
 
-        @bot.command(name='remove', help='Removes song from queue')
+        @bot.command(name='remove', help=helpMessages.REMOVE)
         async def remove(ctx, number):
             try:
                 if len(self.queue) != 0:
@@ -122,7 +128,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='pause', help='Pauses currently playing song')
+        @bot.command(name='pause', help=helpMessages.PAUSE)
         async def pause(ctx):
             # try:
             voice_client = ctx.message.guild.voice_client
@@ -133,7 +139,7 @@ class MusicCommands(commands.Cog):
             # except:#
             await ctx.send("Can't stop playing song")
 
-        @bot.command(name='resume', help='Continues playing paused song')
+        @bot.command(name='resume', help=helpMessages.RESUME)
         async def resume(ctx):
             voice_client = ctx.message.guild.voice_client
             if voice_client.is_paused():
@@ -141,7 +147,7 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("The bot was not playing anything before this. Use play_song command")
 
-        @bot.command(name='stop', help='Stops the song')
+        @bot.command(name='stop', help=helpMessages.STOP)
         async def stop(ctx):
             voice_client = ctx.message.guild.voice_client
             if voice_client.is_playing():
@@ -149,7 +155,7 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("The bot is not playing anything at the moment.")
 
-        @bot.command(name='add', help='Add songs to queue of songs')
+        @bot.command(name='add', help=helpMessages.ADD)
         async def add(ctx, url: str):
             connected = ctx.author.voice.channel
 
@@ -166,8 +172,7 @@ class MusicCommands(commands.Cog):
             else:
                 await ctx.send("Could not add song to queue")
 
-
-        @bot.command(name='viewplaylists', help='Shows all created playlists')
+        @bot.command(name='viewplaylists', help=helpMessages.VIEW_PLAYLISTS)
         async def viewplaylists(ctx):
             x = 0
             try:
@@ -180,7 +185,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='create', help='Creates a playlist')
+        @bot.command(name='create', help=helpMessages.CREATE)
         async def create(ctx, playlist):
             if any(playlist in s for s in self.totalPlaylists):
                 await ctx.send("Playlist already exists")
@@ -198,7 +203,7 @@ class MusicCommands(commands.Cog):
                 except:
                     await ctx.send("Could not create playlist")
 
-        @bot.command(name='addto', help='Add songs to playlist of songs')
+        @bot.command(name='addto', help=helpMessages.ADD_TO)
         async def addto(ctx, playlist, url: str):
             connected = ctx.author.voice.channel
             if connected:
@@ -212,7 +217,7 @@ class MusicCommands(commands.Cog):
                 except:
                     await ctx.send("Could not add song to playlist")
 
-        @bot.command(name='playfrom', help='Play a song from a playlist')
+        @bot.command(name='playfrom', help=helpMessages.PLAY_FROM)
         async def playfrom(ctx, playlist: str):
             connected = ctx.author.voice.channel
             if connected:
@@ -232,7 +237,7 @@ class MusicCommands(commands.Cog):
                 except:
                     await ctx.send("Can't play song")
 
-        @bot.command(name='removefrom', help='Removes song from playlist')
+        @bot.command(name='removefrom', help=helpMessages.REMOVE_FROM)
         async def removefrom(ctx, playlist, number: str):
             try:
                 if self.totalPlaylists.__contains__(playlist):
@@ -245,7 +250,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='delete', help='Deletes playlist')
+        @bot.command(name='delete', help=helpMessages.DELETE)
         async def delete(ctx, playlist):
             try:
                 if self.totalPlaylists.__contains__(playlist):
@@ -258,7 +263,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-        @bot.command(name='viewplaylist', help='Shows the playlist')
+        @bot.command(name='viewplaylist', help=helpMessages.VIEW_PLAYLIST)
         async def viewplaylist(ctx, playlist):
             x = 0
             try:
@@ -274,8 +279,7 @@ class MusicCommands(commands.Cog):
             except:
                 pass
 
-
-        @bot.command(name='volume', help='Changes volume of currently playing')
+        @bot.command(name='volume', help=helpMessages.VOLUME)
         async def volume(ctx, volume: int):
             if ctx.voice_client is None:
                 embed = discord.Embed(
