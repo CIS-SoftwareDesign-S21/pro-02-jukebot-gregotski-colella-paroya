@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
+import helperFunctions
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -58,6 +59,11 @@ class MusicCommands(commands.Cog):
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
             if url is not None:
+                if not ("watch?v=" in url):
+                    url = helperFunctions.convert_to_link(url)
+                    if not ("watch?v=" in url):
+                        await ctx.send("Can't find result from Youtube")
+                        return
                 self.queue.appendleft(url)
                 self.history.append(url)
 
