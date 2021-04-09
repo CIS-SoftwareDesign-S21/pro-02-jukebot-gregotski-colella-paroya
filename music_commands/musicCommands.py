@@ -96,10 +96,9 @@ class MusicCommands(commands.Cog):
                     await ctx.send("Your queue is currently empty")
                 else:
                     while x <= len(self.queue):
-                        filename = await YTDLSources.from_url(self.queue[x],
-                                                              loop=bot.loop)
+                        filename, title = await YTDLSources.from_url(self.queue[x], loop=bot.loop)
                         # add another field for artist, another for song title,another for time
-                        embed.add_field(name="Track", value=filename, inline=True)
+                        embed.add_field(name="Track", value=title, inline=True)
                         # await ctx.send(embed=embed) #ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
                         x += 1
                     await ctx.send(embed=embed)
@@ -147,6 +146,12 @@ class MusicCommands(commands.Cog):
         @bot.command(name='add', help='Add songs to queue of songs')
         async def add(ctx, url: str):
             connected = ctx.author.voice.channel
+
+            if not ("watch?v=" in url):
+                url = helperFunctions.convert_to_link(url)
+                if not ("watch?v=" in url):
+                    await ctx.send("Can't find result from Youtube")
+                    return
 
             if connected:
                 self.queue.append(url)
@@ -213,11 +218,11 @@ class MusicCommands(commands.Cog):
                         async with ctx.typing():
                             x = 0
                            # while len(self.playlists[num]) > 0:
-                            filename = await YTDLSources.from_url(self.playlists[num][0], loop=bot.loop)
+                            filename, title = await YTDLSources.from_url(self.playlists[num][0], loop=bot.loop)
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                               #  x += 1
-                            await ctx.send('**Now playing:** {}'.format(filename))
+                            await ctx.send('**Now playing:** {}'.format(title))
                 except:
                     await ctx.send("Can't play song")
 
@@ -257,8 +262,8 @@ class MusicCommands(commands.Cog):
                         await ctx.send("Your playlist is currently empty")
                     else:
                         while x <= len(self.playlists[num]):
-                            filename = await YTDLSources.from_url(self.playlists[num][x], loop=bot.loop)
-                            await ctx.send(f'**Your playlist consists of: ** ' + '[' + str(x) + '] ' + filename + '!')
+                            filename, title = await YTDLSources.from_url(self.playlists[num][x], loop=bot.loop)
+                            await ctx.send(f'**Your playlist consists of: ** ' + '[' + str(x) + '] ' + title + '!')
                             x += 1
             except:
                 pass
