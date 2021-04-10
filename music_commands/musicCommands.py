@@ -60,19 +60,26 @@ class MusicCommands(commands.Cog):
             if url is not None:
                 self.queue.appendleft(url)
                 self.history.append(url)
-
             if connected:
+
                 try:
+                    embed = discord.Embed(
+                        title='Now Playing:',
+                        colour=discord.Colour.blue()
+                    )
+
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
                         filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)  # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
                         # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        embed.add_field(name="YouTube", value=title, inline=True)
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
-                    await ctx.send('**Now playing:** {}'.format(title))
-
+                    #await ctx.send('**Now playing:** {}'.format(title))
+                    await ctx.send(embed=embed)
                     del (self.queue[0])
+                    pass
                 except:
                     #await ctx.send("**Can't play song**")
                     embed = discord.Embed(
@@ -81,6 +88,7 @@ class MusicCommands(commands.Cog):
                         description='Cannot play song'
                     )
                     return await ctx.send(embed=embed)
+
 
         @bot.command(name='view', help='Shows the queue')
         async def view(ctx):
@@ -262,11 +270,14 @@ class MusicCommands(commands.Cog):
         async def playfrom(ctx, playlist: str):
             connected = ctx.author.voice.channel
             if connected:
-                embed = discord.Embed(
-                    title="Playlists:",
-                    color=discord.Color.purple()
-                )
+
                 try:
+
+                    embed = discord.Embed(
+                        title='Now Playing:',
+                        colour=discord.Colour.blue()
+                    )
+
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     if self.totalPlaylists.__contains__(playlist):
@@ -278,8 +289,12 @@ class MusicCommands(commands.Cog):
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                               #  x += 1
-                            await ctx.send('**Now playing:** {}'.format(title))
-                            return
+                            embed.add_field(name="YouTube", value=title, inline=True)
+                            # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
+                            # await ctx.send('**Now playing:** {}'.format(title))
+                            await ctx.send(embed=embed)
+                            pass
+
                 except:
                     #await ctx.send("**Can't play song**")
                     embed = discord.Embed(
@@ -307,7 +322,13 @@ class MusicCommands(commands.Cog):
                     )
                     return await ctx.send(embed=embed)
             except:
-                pass
+                #await ctx.send(embed=embed)
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Cannot view playlists'
+                )
+                return await ctx.send(embed=embed)
 
         @bot.command(name='delete', help='Deletes playlist')
         async def delete(ctx, playlist):
@@ -327,7 +348,13 @@ class MusicCommands(commands.Cog):
                     )
                     return await ctx.send(embed=embed)
             except:
-                pass
+                #await ctx.send(embed=
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Cannot view playlist'
+                )
+                return await ctx.send(embed=embed)
 
         @bot.command(name='viewplaylist', help='Shows the playlist')
         async def viewplaylist(ctx, playlist):
