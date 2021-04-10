@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
+import helperFunctions
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -57,7 +58,18 @@ class MusicCommands(commands.Cog):
         @bot.command(name='play', help='Plays a song')
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
+
+            #check if song is already playing
+            voice_client = ctx.message.guild.voice_client
+            if voice_client.is_playing():
+                voice_client.stop()
+
             if url is not None:
+                if not ("watch?v=" in url):
+                    url = helperFunctions.convert_to_link(url)
+                    if not ("watch?v=" in url):
+                        await ctx.send("Can't find result from Youtube")
+                        return
                 self.queue.appendleft(url)
                 self.history.append(url)
             if connected:
@@ -104,9 +116,15 @@ class MusicCommands(commands.Cog):
                     await ctx.send("Your queue is currently empty")
                 else:
                     while x <= len(self.queue):
+
                         filename, title = await YTDLSources.from_url(self.queue[x],
                                                               loop=bot.loop)
                         embed.add_field(name="Song " + str(x+1), value=title, inline=True)
+
+                        filename, title = await YTDLSources.from_url(self.queue[x], loop=bot.loop)
+                        # add another field for artist, another for song title,another for time
+                        embed.add_field(name="Track", value=title, inline=True)
+
                         # await ctx.send(embed=embed) #ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
                         x += 1
                     await ctx.send(embed=embed)
@@ -179,6 +197,12 @@ class MusicCommands(commands.Cog):
         @bot.command(name='add', help='Add songs to queue of songs')
         async def add(ctx, url: str):
             connected = ctx.author.voice.channel
+
+            if not ("watch?v=" in url):
+                url = helperFunctions.convert_to_link(url)
+                if not ("watch?v=" in url):
+                    await ctx.send("Can't find result from Youtube")
+                    return
 
             if connected:
                 self.queue.append(url)
@@ -289,11 +313,15 @@ class MusicCommands(commands.Cog):
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                               #  x += 1
+
                             embed.add_field(name="YouTube", value=title, inline=True)
                             # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                             # await ctx.send('**Now playing:** {}'.format(title))
                             await ctx.send(embed=embed)
                             pass
+
+
+                            await ctx.send('**Now playing:** {}'.format(title))
 
                 except:
                     #await ctx.send("**Can't play song**")
@@ -373,8 +401,11 @@ class MusicCommands(commands.Cog):
                     else:
                         while x <= len(self.playlists[num]):
                             filename, title = await YTDLSources.from_url(self.playlists[num][x], loop=bot.loop)
+
                             embed.add_field(name="Song " + str(x + 1), value=title, inline=True)
                             #await ctx.send(f'**Your playlist consists of: ** ' + '[' + str(x) + '] ' + title + '!')
+
+                            
                             x += 1
                         await ctx.send(embed=embed)
                         return
