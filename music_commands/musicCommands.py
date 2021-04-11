@@ -115,7 +115,7 @@ class MusicCommands(commands.Cog):
 
             embed = discord.Embed(
                 title='Queue:',
-                colour=discord.Colour.blue()
+                colour=discord.Colour.purple()
             )
 
             x = 0
@@ -125,7 +125,7 @@ class MusicCommands(commands.Cog):
                 else:
                     while x < len(self.queue):
                         filename, title = await YTDLSources.from_url(self.queue[x], loop=bot.loop)
-                        embed.add_field(name="Song " + str(x + 1), value=title, inline=True)
+                        embed.add_field(name="Song " + str(x + 1) + ": ", value=title, inline=True)
                         # embed.add_field(name="YouTube", value=title, inline=True)
 
                         # add another field for artist, another for song title,another for time
