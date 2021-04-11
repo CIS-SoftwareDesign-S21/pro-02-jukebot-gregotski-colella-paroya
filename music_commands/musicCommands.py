@@ -141,10 +141,10 @@ class MusicCommands(commands.Cog):
                 return await ctx.send(embed=embed)
 
         @bot.command(name='remove', help=helpMessages.REMOVE)
-        async def remove(ctx, number):
+        async def remove(ctx, index: int):
             try:
                 if len(self.queue) != 0:
-                    del(self.queue[int(number)])
+                    del(self.queue[index - 1])
                     return await ctx.send("**Song was deleted from queue**")
                 else:
                     return await ctx.send("**Queue is currently empty**")
