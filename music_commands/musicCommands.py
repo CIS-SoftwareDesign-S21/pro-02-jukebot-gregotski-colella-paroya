@@ -26,8 +26,6 @@ ffmpeg_options = {
 }
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
-queue = []
-
 
 class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
     def __init__(self, source, *, data, volume=0.5):
@@ -139,6 +137,35 @@ class MusicCommands(commands.Cog):
                     title='Error!',
                     colour=discord.Colour.red(),
                     description='Could not view queue')
+                return await ctx.send(embed=embed)
+
+        @bot.command(name='skip', help=helpMessages.SKIP)
+        async def skip(ctx):
+            embed = discord.Embed(
+                title='Now Playing:',
+                colour=discord.Colour.blue()
+            )
+            try:
+                if len(self.queue) == 0:
+                    await ctx.send("**Can't skip, there is nothing left in the queue**")
+                else:
+                    voice_client = ctx.message.guild.voice_client
+                    if voice_client.is_playing():
+                        voice_client.stop()
+                        await ctx.send("**Song was skipped**")
+                        server = ctx.message.guild
+                        voice_channel = server.voice_client
+                        filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        embed.add_field(name="YouTube", value=title, inline=True)
+                        await ctx.send(embed=embed)
+                        del (self.queue[0])
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not skip song')
                 return await ctx.send(embed=embed)
 
         @bot.command(name='remove', help=helpMessages.REMOVE)
