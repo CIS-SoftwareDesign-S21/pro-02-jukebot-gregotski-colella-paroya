@@ -3,6 +3,7 @@ PLAY_LONG = "When !play is followed by no arguments, audio will play from the to
             "followed by a link, audio will play from the designated Youtube video. Finally, when followed" \
             "by text, the audio of the first Youtube search result will play. If the search is longer than one" \
             "word, make sure to put text in quotation marks"
+PLAY_SONG_FROM = "Plays specified song from specified playlist."
 VIEW = "View the current status of the queue"
 REMOVE = "Remove a song from the queue"
 PAUSE = "Pauses the current audio playing from JukeBot"
@@ -20,3 +21,4 @@ VOLUME = "Change the volume of the JukeBot"
 CLEAR = "Clears all the songs in the current queue"
 REPEAT = "Repeats the current song playing"
 SKIP = "Skips the current song in the queue and plays the next one"
+SKIP_FROM = "Skips the current song in the playlist and plays the next one."
