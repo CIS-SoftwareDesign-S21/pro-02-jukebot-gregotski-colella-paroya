@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import random
 from discord.ext import commands, tasks
 import os
 from dotenv import load_dotenv
@@ -202,6 +203,68 @@ class MusicCommands(commands.Cog):
                     description='Could not skip song')
                 return await ctx.send(embed=embed)
 
+
+        @bot.command(name='shufflefrom',help=helpMessages.SHUFFLE_FROM)
+        async def shufflefrom(ctx,playlist):
+            embed = discord.Embed(
+                title='Now Playing:',
+                colour=discord.Colour.blue()
+            )
+            try:
+                if self.totalPlaylists.__contains__(playlist):
+                    num = self.totalPlaylists.index(playlist)
+                    if len(self.playlists[num]) == 0:
+                        await ctx.send("**Can't shuffle empty playlist**")
+                    else:
+                        voice_client = ctx.message.guild.voice_client
+                        if voice_client.is_playing():
+                            voice_client.stop()
+                        await ctx.send("**Playlist is now set to shuffle**")
+                        server = ctx.message.guild
+                        voice_channel = server.voice_client
+                        filename, title = await YTDLSources.from_url(self.playlists[num][random.randint(0,len(self.playlists[num]) - 1)], loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        embed.add_field(name="YouTube", value=title, inline=True)
+                        await ctx.send(embed=embed)
+
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not shuffle through playlist')
+                return await ctx.send(embed=embed)
+
+        @bot.command(name='shuffle', help=helpMessages.SHUFFLE)
+        async def shuffle(ctx):
+            embed = discord.Embed(
+                title='Now Playing:',
+                colour=discord.Colour.blue()
+            )
+            try:
+                if len(self.queue) == 0:
+                    await ctx.send("**Can't shuffle empty queue**")
+                else:
+                    voice_client = ctx.message.guild.voice_client
+                    if voice_client.is_playing():
+                        voice_client.stop()
+                    await ctx.send("**Queue is now set to shuffle**")
+                    server = ctx.message.guild
+                    voice_channel = server.voice_client
+                    filename, title = await YTDLSources.from_url(
+                        self.queue[random.randint(0, len(self.queue) - 1)], loop=bot.loop)
+                    voice_channel.play(
+                        discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                    embed.add_field(name="YouTube", value=title, inline=True)
+                    await ctx.send(embed=embed)
+
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not shuffle through queue')
+                return await ctx.send(embed=embed)
+
         @bot.command(name='backfrom', help=helpMessages.BACK_FROM)
         async def backfrom(ctx, playlist):
             embed = discord.Embed(
@@ -342,7 +405,7 @@ class MusicCommands(commands.Cog):
                 if len(self.totalPlaylists) == 0:
                     await ctx.send("**There are no playlists created**")
                 else:
-                    while x <= len(self.playlists):
+                    while x < len(self.playlists):
                         # await ctx.send(f'**Playlist: ** ' + self.totalPlaylists[x])
                         embed.add_field(name="Playlist " + str(x + 1), value=self.totalPlaylists[x], inline=True)
                         # embed.add_field(name=self.totalPlaylists[x], value=self.totalPlaylists[x], inline=True)
