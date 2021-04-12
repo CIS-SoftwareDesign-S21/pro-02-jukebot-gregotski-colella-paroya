@@ -60,6 +60,7 @@ class MusicCommands(commands.Cog):
         @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
+            x = 0
 
             # check if song is already playing
             voice_client = ctx.message.guild.voice_client
@@ -144,7 +145,7 @@ class MusicCommands(commands.Cog):
         async def remove(ctx, index: int):
             try:
                 if len(self.queue) != 0:
-                    del(self.queue[index - 1])
+                    del (self.queue[index - 1])
                     return await ctx.send("**Song was deleted from queue**")
                 else:
                     return await ctx.send("**Queue is currently empty**")
@@ -216,6 +217,22 @@ class MusicCommands(commands.Cog):
                     title='Error!',
                     colour=discord.Colour.red(),
                     description='Could not add song to queue'
+                )
+                return await ctx.send(embed=embed)
+
+        @bot.command(name='clear', help=helpMessages.CLEAR)
+        async def clear(ctx):
+            try:
+                if len(self.queue) == 0:
+                    return await ctx.send("**Queue is currently empty, cannot clear**")
+                else:
+                    self.queue.clear()
+                    return await ctx.send("**Queue has been cleared!**")
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not clear queue'
                 )
                 return await ctx.send(embed=embed)
 
