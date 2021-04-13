@@ -93,10 +93,9 @@ class MusicCommands(commands.Cog):
 
                         filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
                         # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                        voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         embed.add_field(name="YouTube", value=title, inline=True)
+                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))embed.add_field(name="YouTube", value=title, inline=True)
                         # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                     # await ctx.send('**Now playing:** {}'.format(title))
                     await ctx.send(embed=embed)
@@ -159,7 +158,8 @@ class MusicCommands(commands.Cog):
                         voice_channel = server.voice_client
                         filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
                         voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         embed.add_field(name="YouTube", value=title, inline=True)
                         await ctx.send(embed=embed)
                         del (self.queue[0])
@@ -192,7 +192,9 @@ class MusicCommands(commands.Cog):
                             self.currentIndex += 1
                             filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex], loop=bot.loop)
                             voice_channel.play(
-                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+
                             embed.add_field(name="YouTube", value=title, inline=True)
                             await ctx.send(embed=embed)
 
@@ -202,7 +204,6 @@ class MusicCommands(commands.Cog):
                     colour=discord.Colour.red(),
                     description='Could not skip song')
                 return await ctx.send(embed=embed)
-
 
         @bot.command(name='shufflefrom',help=helpMessages.SHUFFLE_FROM)
         async def shufflefrom(ctx,playlist):
@@ -224,7 +225,8 @@ class MusicCommands(commands.Cog):
                         voice_channel = server.voice_client
                         filename, title = await YTDLSources.from_url(self.playlists[num][random.randint(0,len(self.playlists[num]) - 1)], loop=bot.loop)
                         voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                         embed.add_field(name="YouTube", value=title, inline=True)
                         await ctx.send(embed=embed)
 
@@ -254,7 +256,8 @@ class MusicCommands(commands.Cog):
                     filename, title = await YTDLSources.from_url(
                         self.queue[random.randint(0, len(self.queue) - 1)], loop=bot.loop)
                     voice_channel.play(
-                        discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                     embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
 
@@ -287,7 +290,8 @@ class MusicCommands(commands.Cog):
                             filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex],
                                                                          loop=bot.loop)
                             voice_channel.play(
-                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                             embed.add_field(name="YouTube", value=title, inline=True)
                             await ctx.send(embed=embed)
 
@@ -498,9 +502,8 @@ class MusicCommands(commands.Cog):
 
                                 #while voice_client.is_playing():
                             filename, title = await YTDLSources.from_url(self.playlists[num][0], loop=bot.loop)
-                            voice_channel.play(
-                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-
+                            # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
 
                             embed.add_field(name="YouTube", value=title, inline=True)
                             # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
@@ -538,7 +541,8 @@ class MusicCommands(commands.Cog):
                             self.currentIndex = int(song) - 1
                             filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex], loop=bot.loop)
                             voice_channel.play(
-                                discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                                discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",source=filename))
                             embed.add_field(name="YouTube", value=title, inline=True)
                             await ctx.send(embed=embed)
                             pass
