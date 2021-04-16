@@ -1,12 +1,18 @@
 import asyncio
+import functools
+
 import discord
 from discord.ext import commands, tasks
 import os
+
+from discord.utils import get
 from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
 import helperFunctions
 import helpMessages
+import asyncio
+from asyncio import run_coroutine_threadsafe as rct
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -27,6 +33,9 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+class YTDLError(Exception):
+    pass
+
 class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
@@ -34,6 +43,7 @@ class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
         self.title = data.get('title')
         self.url = ""
 
+    ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
@@ -46,6 +56,9 @@ class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
         return filename, title
 
 
+
+
+
 class MusicCommands(commands.Cog):
 
     def __init__(self, bot):
@@ -54,6 +67,19 @@ class MusicCommands(commands.Cog):
         self.history = deque()
         self.playlists = []
         self.totalPlaylists = []
+        #self.play_next_song = asyncio.Event()
+
+
+
+        async def play_next(ctx):
+            if len(self.queue) >= 1:
+                del self.queue[0]
+                vc = get(self.bot.voice_clients, guild=ctx.guild)
+
+                filename = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
+                vc.play(discord.FFmpegPCMAudio(source=filename), after=lambda e: play_next(ctx))
+                asyncio.run_coroutine_threadsafe(await ctx.send("No more songs in queue."),loop=asyncio.get_event_loop())
+
 
         @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
@@ -77,8 +103,8 @@ class MusicCommands(commands.Cog):
                 # add url to queue and history list
                 self.queue.appendleft(url)
                 self.history.append(url)
-            if connected:
 
+            if connected:
                 try:
                     embed = discord.Embed(
                         title='Now Playing:',
@@ -89,16 +115,17 @@ class MusicCommands(commands.Cog):
                     voice_channel = server.voice_client
                     async with ctx.typing():
                         filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
-                        # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                        voice_channel.play(
-                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                        embed.add_field(name="YouTube", value=title, inline=True)
-                        # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
-                    # await ctx.send('**Now playing:** {}'.format(title))
+                        voice_channel.play(discord.FFmpegPCMAudio(source=filename), after=lambda e:
+                        play_next(ctx))
+
+                            #voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
+                                #                                  source=filename))
+                    embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
                     del (self.queue[0])
                     pass
+
+
                 except:
                     # await ctx.send("**Can't play song**")
                     embed = discord.Embed(
@@ -107,6 +134,58 @@ class MusicCommands(commands.Cog):
                         description='Cannot play song'
                     )
                     return await ctx.send(embed=embed)
+
+        @bot.command(name='rewind', help=helpMessages.VIEW)
+        async def rewind(ctx, url):
+
+            if url is not None:
+                # if argument not a youtube link, convert
+                if not ("watch?v=" in url):
+                    url = helperFunctions.convert_to_link(url)
+                    # if converting to youtube link was unsuccessful
+                    if not ("watch?v=" in url):
+                        await ctx.send("Can't find result from Youtube")
+                        return
+
+            try:
+
+                server = ctx.message.guild
+                voice_channel = server.voice_client
+                f = await YTDLSources.from_url(url, loop=bot.loop)
+           #     f2 = f.seek(0)
+                voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=f.seek(0)))
+                await ctx.send("Rewinding song...")
+            except:
+                await ctx.send("Cannot rewind song")
+
+
+        @bot.command(name='replay')
+        async def replay(ctx):
+            voice_client = ctx.message.guild.voice_client
+            if not voice_client.is_playing():
+                return await ctx.send('Nothing being played at the moment.')
+          #  try:
+
+        #        server = ctx.message.guild
+        #        voice_channel = server.voice_client
+        #        filename = await YTDLSources.from_url(self.history[0], loop=bot.loop)
+        #        voice_channel.play(filename, after=lambda e: self.history[0].duration()) #print('Player error: %s' % e) if e else None)
+                #voice_channel.play(
+                #    discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+           # voice_channel.play(FFmpegPCMAudio(audio), after=lambda e: )
+          #  if ctx.voice_client.loop:
+        #        await ctx.message.add_reaction('✅')
+         #   except:
+         #       await ctx.send("Can't replay song")
+
+     #   @bot.command(name='seek', help=helpMessages.VIEW)
+      #  async def seek(ctx,num):
+
+         #   fileOpen = open(file)
+         #   f = fileOpen.seek(int(num))
+        #    server = ctx.message.guild
+          #  voice_channel = server.voice_client
+          #  voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=f))
 
         @bot.command(name='view', help=helpMessages.VIEW)
         async def view(ctx):
@@ -441,3 +520,4 @@ class MusicCommands(commands.Cog):
 
 def setup(bot):
     bot.add_cog(MusicCommands(bot))
+

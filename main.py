@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from random import choice
 
+
 load_dotenv()
 TOKEN = open("token.txt", "r").read()
 intents = discord.Intents().all()
@@ -51,7 +52,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name='general')
-    await channel.send(f'Welcome {member.mention}! Ready to jam out? See !help command for details!')
+ #   await channel.send(f'Welcome {member.mention}! Ready to jam out? See !help command for details!')
 
 
 bot.run(TOKEN)
