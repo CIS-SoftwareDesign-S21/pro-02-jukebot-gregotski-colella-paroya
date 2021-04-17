@@ -3,6 +3,8 @@ import discord
 import random
 from discord.ext import commands, tasks
 import os
+
+from discord.utils import get
 from dotenv import load_dotenv
 import youtube_dl
 from collections import deque
@@ -56,11 +58,28 @@ class MusicCommands(commands.Cog):
         self.playlists = []
         self.totalPlaylists = []
         self.currentIndex = 0
+        self.titles = []
+        self.filenames = []
+
+        def play_next(ctx):
+           # try:
+        #if len(self.queue) > 0:
+                    #                    del self.history[0]
+            #vc = get(self.bot.voice_clients, guild=ctx.guild)
+
+            server = ctx.message.guild
+            voice_channel = server.voice_client
+                    # async with ctx.typing():
+                    # filename = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
+          #  voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",source=filename2)) #after=lambda e: play_next(ctx))
+            #asyncio.run_coroutine_threadsafe(print("No more songs in queue."), loop=self.bot.loop)
+          #  except:
+            #print("Error")
+                # await ctx.send("Error")
 
         @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
             connected = ctx.author.voice.channel
-            x = 0
 
             # check if song is already playing
             voice_client = ctx.message.guild.voice_client
@@ -80,6 +99,7 @@ class MusicCommands(commands.Cog):
                 # add url to queue and history list
                 self.queue.appendleft(url)
                 self.history.append(url)
+
             if connected:
                 try:
                     embed = discord.Embed(
@@ -90,17 +110,22 @@ class MusicCommands(commands.Cog):
                     server = ctx.message.guild
                     voice_channel = server.voice_client
                     async with ctx.typing():
-
                         filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
-                        # self.queue.popleft(), loop=bot.loopself.queue[0],loop=bot.loop)
-                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
-                        embed.add_field(name="YouTube", value=title, inline=True)
-                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))embed.add_field(name="YouTube", value=title, inline=True)
-                        # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
-                    # await ctx.send('**Now playing:** {}'.format(title))
+                        #    del self.queue[0]
+                        global filename2
+                        filename2 = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
+                        # if len(self.queue) != 0:
+                        # voice_channel.play(discord.FFmpegPCMAudio(source=filename), after=lambda e:
+                        # play_next(ctx))
+                        # else:
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
+                                                                  source=filename))
+                    embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
                     del (self.queue[0])
                     pass
+
+
                 except:
                     # await ctx.send("**Can't play song**")
                     embed = discord.Embed(
@@ -109,6 +134,103 @@ class MusicCommands(commands.Cog):
                         description='Cannot play song'
                     )
                     return await ctx.send(embed=embed)
+
+        @bot.command(name='seek', help=helpMessages.VIEW)
+        async def seek(ctx,num):
+
+           # fileOpen = open(filename)
+         #   f = fileOpen.seek(int(num))
+            server = ctx.message.guild
+            voice_channel = server.voice_client
+        #    voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=f))
+
+        @bot.command(name='rewind', help=helpMessages.REWIND)
+        async def rewind(ctx, num):
+            embed = discord.Embed(
+                title='Now Playing:',
+                colour=discord.Colour.blue()
+            )
+            try:
+                if len(self.history) == 0:
+                    await ctx.send("**Can't rewind, there is nothing in your history**")
+                else:
+                    voice_client = ctx.message.guild.voice_client
+                    if voice_client.is_playing():
+                        voice_client.stop()
+                    await ctx.send("**Rewinding**")
+                    server = ctx.message.guild
+                    voice_channel = server.voice_client
+                    filename, title = await YTDLSources.from_url(self.history[int(num) - 1], loop=bot.loop)
+                    voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                            #discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",
+                             #                      source=filename))
+                    embed.add_field(name="YouTube", value=title, inline=True)
+                    await ctx.send(embed=embed)
+                    return
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not rewind to specified song')
+                return await ctx.send(embed=embed)
+
+        @bot.command(name='history', help=helpMessages.HISTORY)
+        async def history(ctx):
+            embed = discord.Embed(
+                title="History:",
+                color=discord.Color.dark_grey()
+            )
+            connected = ctx.author.voice.channel
+            # x = 0
+            if connected:
+                if len(self.history) == 0:
+                    await ctx.send("**Your history is currently empty**")
+                else:
+                    x = 0
+                    while x < len(self.history):
+                        filename, title = await YTDLSources.from_url(self.history[x], loop=bot.loop)
+                        embed.add_field(name="Song " + str(x + 1), value=title, inline=True)
+                        # filename, title = await YTDLSources.from_url(self.queue[x], loop=bot.loop)
+                        # embed.add_field(name="Track", value=title, inline=True)
+                        x += 1
+                    await ctx.send(embed=embed)
+                    return
+            else:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not view history'
+                )
+                return await ctx.send(embed=embed)
+
+        @bot.command(name='replay', help=helpMessages.REPLAY)
+        async def replay(ctx):
+
+            embed = discord.Embed(
+                title='Replaying:',
+                colour=discord.Colour.blue()
+            )
+            server = ctx.message.guild
+            voice_channel = server.voice_client
+            voice_client = ctx.message.guild.voice_client
+            # if not voice_client.is_playing():
+            #    return await ctx.send('Nothing being played at the moment.')
+            try:
+                filename, title = await YTDLSources.from_url(self.history[0], loop=bot.loop)
+                voice_channel.play(discord.FFmpegPCMAudio(source=filename), after=lambda e: self.history[0])
+                # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
+                #                                      source=filename))
+                embed.add_field(name="YouTube", value=title, inline=True)
+                await ctx.send(embed=embed)
+                pass
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description="Can't replay song"
+                )
+            return await ctx.send(embed=embed)
 
         @bot.command(name='view', help=helpMessages.VIEW)
         async def view(ctx):
