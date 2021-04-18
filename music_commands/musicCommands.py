@@ -28,6 +28,9 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+# queue_history = []
+
+
 class YTDLSources(discord.PCMVolumeTransformer, commands.Cog):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
@@ -56,6 +59,8 @@ class MusicCommands(commands.Cog):
         self.playlists = []
         self.totalPlaylists = []
         self.currentIndex = 0
+        self.queue_history = []
+        self.index = 0
 
         @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
@@ -80,6 +85,7 @@ class MusicCommands(commands.Cog):
                 # add url to queue and history list
                 self.queue.appendleft(url)
                 self.history.append(url)
+                self.queue_history.append(url)
             if connected:
                 try:
                     embed = discord.Embed(
@@ -141,11 +147,42 @@ class MusicCommands(commands.Cog):
                     description='Could not view queue')
                 return await ctx.send(embed=embed)
 
+        # display queue history, just here for when i was working on the back command -sarah lol
+        @bot.command(name='qview')
+        async def view(ctx):
+
+            embed = discord.Embed(
+                title='Queue History:',
+                colour=discord.Colour.purple()
+            )
+
+            x = 0
+            try:
+                if len(self.queue_history) == 0:
+                    await ctx.send("**Your queue is currently empty**")
+                else:
+                    while x < len(self.queue_history):
+                        filename, title = await YTDLSources.from_url(self.queue_history[x], loop=bot.loop)
+                        embed.add_field(name="Song " + str(x + 1) + ": ", value=title, inline=True)
+                        # embed.add_field(name="YouTube", value=title, inline=True)
+
+                        # add another field for artist, another for song title,another for time
+                        # embed.add_field(name="Track", value=title, inline=True)
+                        # await ctx.send(f'**Your queue is now: ** ' + '[' + str(x) + '] ' + filename + '!')
+                        x += 1
+                    await ctx.send(embed=embed)
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not view queue')
+                return await ctx.send(embed=embed)
+
         @bot.command(name='skip', help=helpMessages.SKIP)
         async def skip(ctx):
             embed = discord.Embed(
                 title='Now Playing:',
-                colour=discord.Colour.blue()
+                colour=discord.Colour.blue
             )
             try:
                 if len(self.queue) == 0:
@@ -154,6 +191,7 @@ class MusicCommands(commands.Cog):
                     voice_client = ctx.message.guild.voice_client
                     if voice_client.is_playing():
                         voice_client.stop()
+                        self.index = self.index + 1
                         await ctx.send("**Song was skipped**")
                         server = ctx.message.guild
                         voice_channel = server.voice_client
@@ -170,6 +208,40 @@ class MusicCommands(commands.Cog):
                     description='Could not skip song')
                 return await ctx.send(embed=embed)
 
+        @bot.command(name='back', help=helpMessages.BACK)
+        async def back(ctx):
+            embed = discord.Embed(
+                title='Now Playing:',
+                colour=discord.Colour.blue()
+            )
+            try:
+                if self.index == -1:
+                    embed = discord.Embed(
+                        title='Error!',
+                        colour=discord.Colour.red(),
+                        description='Could not go back a song')
+                    return await ctx.send(embed=embed)
+                else:
+                    voice_client = ctx.message.guild.voice_client
+                    if voice_client.is_playing():
+                        voice_client.stop()
+                        await ctx.send("**You went back one song**")
+                        server = ctx.message.guild
+                        voice_channel = server.voice_client
+                        self.index -= 1
+                        filename, title = await YTDLSources.from_url(self.queue_history[self.index],
+                                                                     loop=bot.loop)
+                        voice_channel.play(
+                            discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        embed.add_field(name="YouTube", value=title, inline=True)
+                        await ctx.send(embed=embed)
+            except:
+                embed = discord.Embed(
+                    title='Error!',
+                    colour=discord.Colour.red(),
+                    description='Could not go back a song')
+                return await ctx.send(embed=embed)
+
         @bot.command(name='skipfrom', help=helpMessages.SKIP_FROM)
         async def skipfrom(ctx, playlist):
             embed = discord.Embed(
@@ -184,13 +256,14 @@ class MusicCommands(commands.Cog):
                     else:
                         voice_client = ctx.message.guild.voice_client
                         if voice_client.is_playing():
-                            #index = self.playlists[num].index()
+                            # index = self.playlists[num].index()
                             voice_client.stop()
                             await ctx.send("**Song was skipped**")
                             server = ctx.message.guild
                             voice_channel = server.voice_client
                             self.currentIndex += 1
-                            filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex], loop=bot.loop)
+                            filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex],
+                                                                         loop=bot.loop)
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                             embed.add_field(name="YouTube", value=title, inline=True)
@@ -203,9 +276,8 @@ class MusicCommands(commands.Cog):
                     description='Could not skip song')
                 return await ctx.send(embed=embed)
 
-
-        @bot.command(name='shufflefrom',help=helpMessages.SHUFFLE_FROM)
-        async def shufflefrom(ctx,playlist):
+        @bot.command(name='shufflefrom', help=helpMessages.SHUFFLE_FROM)
+        async def shufflefrom(ctx, playlist):
             embed = discord.Embed(
                 title='Now Playing:',
                 colour=discord.Colour.blue()
@@ -222,7 +294,8 @@ class MusicCommands(commands.Cog):
                         await ctx.send("**Playlist is now set to shuffle**")
                         server = ctx.message.guild
                         voice_channel = server.voice_client
-                        filename, title = await YTDLSources.from_url(self.playlists[num][random.randint(0,len(self.playlists[num]) - 1)], loop=bot.loop)
+                        filename, title = await YTDLSources.from_url(
+                            self.playlists[num][random.randint(0, len(self.playlists[num]) - 1)], loop=bot.loop)
                         voice_channel.play(
                             discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                         embed.add_field(name="YouTube", value=title, inline=True)
@@ -303,6 +376,7 @@ class MusicCommands(commands.Cog):
             try:
                 if len(self.queue) != 0:
                     del (self.queue[index - 1])
+                    del (self.queue_history[index - 1])
                     return await ctx.send("**Song was deleted from queue**")
                 else:
                     return await ctx.send("**Queue is currently empty**")
@@ -366,6 +440,7 @@ class MusicCommands(commands.Cog):
 
             if connected:
                 self.queue.append(url)
+                self.queue_history.append(url)
                 await ctx.send("**Song added to queue**")
                 return
             else:
@@ -492,23 +567,22 @@ class MusicCommands(commands.Cog):
                         num = self.totalPlaylists.index(playlist)
                         async with ctx.typing():
                             voice_client = ctx.message.guild.voice_client
-                            #if voice_client.is_playing():
-                            #x = 0
-                            #while x < len(self.playlists[num]):
+                            # if voice_client.is_playing():
+                            # x = 0
+                            # while x < len(self.playlists[num]):
 
-                                #while voice_client.is_playing():
+                            # while voice_client.is_playing():
                             filename, title = await YTDLSources.from_url(self.playlists[num][0], loop=bot.loop)
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-
 
                             embed.add_field(name="YouTube", value=title, inline=True)
                             # voice_channel.play(filename, after=lambda e: print('Player error: %s' % e) if e else None)
                             # await ctx.send('**Now playing:** {}'.format(title))
                             await ctx.send(embed=embed)
-                             #   x += 1
+                            #   x += 1
 
-            #                await ctx.send('**Now playing:** {}'.format(title))
+                #                await ctx.send('**Now playing:** {}'.format(title))
 
                 except:
                     pass
@@ -536,7 +610,8 @@ class MusicCommands(commands.Cog):
                         num = self.totalPlaylists.index(playlist)
                         async with ctx.typing():
                             self.currentIndex = int(song) - 1
-                            filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex], loop=bot.loop)
+                            filename, title = await YTDLSources.from_url(self.playlists[num][self.currentIndex],
+                                                                         loop=bot.loop)
                             voice_channel.play(
                                 discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
                             embed.add_field(name="YouTube", value=title, inline=True)
