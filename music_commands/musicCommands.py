@@ -99,7 +99,6 @@ class MusicCommands(commands.Cog):
             elif (replayVotes >= numMembers):
                  await ctx.send("Replaying song!")
                  await replay(ctx)
-                 await replay(ctx)
             elif (stopVotes >= numMembers):
                 await ctx.send("Stopping current song")
                 await stop(ctx)
@@ -207,7 +206,7 @@ class MusicCommands(commands.Cog):
                 # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
                 #                                      source=filename))
                 embed.add_field(name="YouTube", value=title, inline=True)
-                await ctx.send(embed=embed)
+                # await ctx.send(embed=embed)
                 pass
             except:
                 embed = discord.Embed(
