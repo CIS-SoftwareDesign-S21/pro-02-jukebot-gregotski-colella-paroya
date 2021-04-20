@@ -9,6 +9,7 @@ TOKEN = open("token.txt", "r").read()
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
+bot.remove_command("help")
 status = ['Taylor Swift', 'Harry Styles', 'Gucci Mane']
 
 if __name__ == '__main__':
