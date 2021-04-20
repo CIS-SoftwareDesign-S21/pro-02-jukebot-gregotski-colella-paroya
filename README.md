@@ -64,5 +64,19 @@ Listed below are the different commands that are available for use:
 https://trello.com/b/5LfhTkWk/jukebot
 
 # How to Install
-For developers, it is necessary to install Python 3.9, discord.py, and youtube_dl. Once the project is completed, a user will only need to be in the discord server to utilize the jukebot.
+If hosting the bot, it is necessary to install any dependencies needed to run 
+the bot, which are Python 3.9, discord.py, youtube_dl, and FFMPEG.
+- Use the command `pip install discord.py` to install discord.py.
+- Use the command `pip install youtube_dl` to install youtube_dl. 
+- Download FFMPEG **[here](https://www.ffmpeg.org/)**
+
+Before you start running your code, make sure to change 
+  the executable path for FFMPEG in the code to match your own. 
+
+Once these dependencies are installed and your FFMPEG path is changed, you
+can run JukeBot through your chosen IDE or
+command prompt!
+
+If you are not hosting the bot, a user will only need to be in the discord server 
+to utilize the JukeBot.
 
