@@ -7,6 +7,8 @@ import youtube_dl
 from collections import deque
 import helperFunctions
 import helpMessages
+from discord.utils import get
+
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
@@ -59,7 +61,50 @@ class MusicCommands(commands.Cog):
         self.filenames = []
         self.retainedPlaylist = []
         self.retainedPlaylists = []
+        self.reactions = ['⏸', '⏭', '🔁', '⏹']
 
+        @bot.command(name="vote")
+        async def vote(ctx):
+            if not ctx.message.guild.voice_client.is_playing():
+                await ctx.send("Nothing playing to vote on")
+                return
+            msg = await ctx.send("Thoughts on the song? You've got 10 seconds to vote!")
+            for emoji in self.reactions:
+                await msg.add_reaction(emoji)
+
+            channel = ctx.author.voice.channel
+            numMembers = len(channel.members)
+
+            #give time to vote
+            await asyncio.sleep(10)
+
+            msg = await ctx.channel.fetch_message(msg.id)
+            pauseVotes = 0
+            skipVotes = 0
+            stopVotes= 0
+            replayVotes = 0
+
+            pauseVotes = msg.reactions[0].count
+            skipVotes = msg.reactions[1].count
+            replayVotes = msg.reactions[2].count
+            stopVotes = msg.reactions[3].count
+
+            print(skipVotes)
+            if (skipVotes >= numMembers):
+                await ctx.send("Skipping song")
+                await skip(ctx)
+            elif (pauseVotes >= numMembers):
+                await ctx.send("Pausing song")
+                await pause(ctx)
+            # elif (replayVotes >= numMembers):
+            #     await ctx.send("Replaying song!")
+            #     await replay(ctx)
+            elif (stopVotes >= numMembers):
+                await ctx.send("Stopping current song")
+                await stop(ctx)
+            else:
+                await ctx.send("Not enough votes to pause, skip, replay, or stop")
+                return
 
         @bot.command(name='play', description=helpMessages.PLAY_LONG, help=helpMessages.PLAY_SHORT)
         async def play(ctx, url: str = None):
@@ -98,8 +143,13 @@ class MusicCommands(commands.Cog):
                         voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe",
                                                                   source=filename))
                     embed.add_field(name="YouTube", value=title, inline=True)
-                    await ctx.send(embed=embed)
+                    await ctx.send(embed=embed)               
+                        voice_channel.play(discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+                        embed.add_field(name="YouTube", value=title, inline=True)
+                        # voice_channel.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))embed.add_field(name="YouTube", value=title, inline=True)
+
                     del (self.queue[0])
+                    return await ctx.send(embed=embed)
                     pass
 
 
