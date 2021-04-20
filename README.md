@@ -36,28 +36,28 @@ Listed below are the different commands that are available for use:
 - `!back:` goes back a song in the queue and plays it.
 - `!backfrom:` goes back to the previous song in a playlist.
 - `!clear:` clears all the current songs in the queue.
-- `!connect:` connects bot to the voice channel the user is in <p>
+- `!connect:` connects bot to the voice channel the user is in.
 - `!create:` creates a new playlist.
 - `!delete:`  deletes a specific playlist.
-- `!disconnect:` disconnects bot from voice channel. <p>
+- `!disconnect:` disconnects bot from voice channel.
 - `!history:` shows the history of the queue.
 - `!pause:` pauses the current audio playing from JukeBot.
-- `!play [song name, link, title, keyword, etc.]:` plays the audio of the requested YouTube video<p><p>
-- `!playfrom:` plays songs from a specific playlist
+- `!play [song name, link, title, keyword, etc.]:` plays the audio of the requested YouTube video.
+- `!playfrom:` plays songs from a specific playlist.
 - `!playsongfrom:` plays specified song from specified playlist.
 - `!remove:` removes a specific song from your queue.
 - `!removefrom:` remove a song from a playlist.
 - `!replay:` replays song that just ended.  
-- `!resume:` resume the paused song or audio<p>
+- `!resume:` resume the paused song or audio.
 - `!rewind:` user can select a song that had already been played before to play again.
 - `!shuffle:` plays a random song in the queue. 
 - `!shufflefrom:` plays a random song in specified playlist.
 - `!skip:` skips the current song in the queue and plays the next one.
 - `!skipfrom:` skips the current song in the playlist and plays the next one.
-- `!stop:` stops playing current song or audio<p>
+- `!stop:` stops playing current song or audio.
 - `!view:` view the current songs in the queue.
 - `!viewplaylist:` view the current songs in a specific playlist.
-- `!viewplaylists:` shows all created playlists
+- `!viewplaylists:` shows all created playlists.
 - `!volume:` changes the volume of the JukeBot.
 
 # Trello Board
