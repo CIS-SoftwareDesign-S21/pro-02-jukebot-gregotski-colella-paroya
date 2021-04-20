@@ -61,10 +61,13 @@ Listed below are the different commands that are available for use:
 - `!volume:` changes the volume of the JukeBot.
 
 # Trello Board
-https://trello.com/b/5LfhTkWk/jukebot
+**[Link to Trello Board](https://trello.com/b/5LfhTkWk/jukebot)**
 
 # How to Install
-If hosting the bot, it is necessary to install any dependencies needed to run 
+JukeBot is dependent on an OAuth2 token, so you would have to create your own
+bot via [Discord's Developer Portal](https://discord.com/developers/docs/intro)
+, and switch your token in. Also,
+if hosting the bot, it is necessary to install any dependencies needed to run 
 the bot, which are Python 3.9, discord.py, youtube_dl, and FFMPEG.
 - Use the command `pip install discord.py` to install discord.py.
 - Use the command `pip install youtube_dl` to install youtube_dl. 
@@ -80,3 +83,9 @@ command prompt!
 If you are not hosting the bot, a user will only need to be in the discord server 
 to utilize the JukeBot.
 
+# Required Resources
+- Python 3.9
+- Discord Account
+- [Discord's Python API](https://discordpy.readthedocs.io/en/latest/)
+- [FFMPEG](https://www.ffmpeg.org/)
+- [Discord Developer Portal Account](https://discord.com/developers/docs/intro)
