@@ -31,34 +31,34 @@ For his next Discord night, Danny's been wanting to integrate a music bot for pl
 JukeBot allows for multiple users to interact with the bot at the same time and supports 
 a multitude of different commands, such as maintaining a music queue and creating playlists.
 Listed below are the different commands that are available for use:
-- `!add:`
-- `!addto:`
-- `!back:`
-- `!backfrom:`
-- `!clear:`
+- `!add:` adds a song to the queue.
+- `!addto:` adds a song to a specific playlist
+- `!back:` goes back a song in the queue and plays it.
+- `!backfrom:` goes back to the previous song in a playlist.
+- `!clear:` clears all the current songs in the queue.
 - `!connect:` connects bot to the voice channel the user is in <p>
-- `!create:`
-- `!delete:`  
+- `!create:` creates a new playlist.
+- `!delete:`  deletes a specific playlist.
 - `!disconnect:` disconnects bot from voice channel. <p>
-- `!history:`
-- `!pause:`
+- `!history:` shows the history of the queue.
+- `!pause:` pauses the current audio playing from JukeBot.
 - `!play [song name, link, title, keyword, etc.]:` plays the audio of the requested YouTube video<p><p>
-- `!playfrom:`
-- `!playsongfrom:`
-- `!remove:`
-- `!removefrom:`
-- `!replay:`  
+- `!playfrom:` plays songs from a specific playlist
+- `!playsongfrom:` plays specified song from specified playlist.
+- `!remove:` removes a specific song from your queue.
+- `!removefrom:` remove a song from a playlist.
+- `!replay:` replays song that just ended.  
 - `!resume:` resume the paused song or audio<p>
-- `!rewind:`
-- `!shuffle:`
-- `!shufflefrom:`
-- `!skip:`
-- `!skipfrom:`
+- `!rewind:` user can select a song that had already been played before to play again.
+- `!shuffle:` plays a random song in the queue. 
+- `!shufflefrom:` plays a random song in specified playlist.
+- `!skip:` skips the current song in the queue and plays the next one.
+- `!skipfrom:` skips the current song in the playlist and plays the next one.
 - `!stop:` stops playing current song or audio<p>
-- `!view:`
-- `!viewplaylist:`
-- `!viewplaylists:`
-- `!volume:`
+- `!view:` view the current songs in the queue.
+- `!viewplaylist:` view the current songs in a specific playlist.
+- `!viewplaylists:` shows all created playlists
+- `!volume:` changes the volume of the JukeBot.
 
 # Trello Board
 https://trello.com/b/5LfhTkWk/jukebot
