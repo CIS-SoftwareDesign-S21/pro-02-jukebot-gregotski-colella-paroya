@@ -1,9 +1,13 @@
 import asyncio
+from glob import iglob
+
 import discord
 import random
 from discord.ext import commands, tasks
 import os
 import csv
+from csv import reader
+from csv import writer
 from discord.utils import get
 from dotenv import load_dotenv
 import youtube_dl
@@ -61,6 +65,7 @@ class MusicCommands(commands.Cog):
         self.titles = []
         self.filenames = []
         self.retainedPlaylist = []
+        #self.retainedPlaylists = str
         self.retainedPlaylists = []
 
         # self.savedPlaylists = [self.totalPlaylists]
@@ -573,27 +578,39 @@ class MusicCommands(commands.Cog):
                 title="Playlists:",
                 color=discord.Color.purple()
             )
-            x = 0
 
-            if 'playlists.csv' != None:
-                savedPlaylists()
-                with open('playlists.csv') as myFile:
-                    reader = csv.DictReader(myFile)
-                    row = next(reader)
-                #    for row in reader:
-                 #       playlist = self.totalPlaylists[0]
-                  #      print(playlist)
-                    self.retainedPlaylists = row[str(row)]
-                       # print(self.retainedPlaylists)
+            if 'allplaylists.csv' != None:
+               #savedPlaylists()
+               # file = open('playlists.csv', 'r')
+                #with file:
+               # with open('playlists.csv',newline='') as file:
+                 #   reader = csv.DictReader(file)
+                file = open('allplaylists.csv', 'r')
+                with file:
+                    reader = csv.DictReader(file)
+
+                    for row in reader:
+                        self.retainedPlaylists.append(row['playlists:'])
+                        print(self.retainedPlaylists)
+                   #    for row in reader:
+                   #       playlist = self.totalPlaylists[0]
+                   #      print(playlist)
+                #   self.retainedPlaylists = row[str(row)]
                     if self.retainedPlaylists is not None:
-                        self.totalPlaylists.append(self.retainedPlaylists)
-                        self.playlists.append(self.retainedPlaylists)
-
+                        if self.totalPlaylists.__contains__(self.retainedPlaylists):
+                            pass
+                        else:
+                            x = 0
+                            while x < len(self.retainedPlaylists):
+                                self.totalPlaylists.append(self.retainedPlaylists[x])
+                                self.playlists.append(self.retainedPlaylists[x])
+                                x+=1
             try:
                # if len()
                 if len(self.totalPlaylists) == 0:
                     await ctx.send("**There are no playlists created**")
                 else:
+                    x = 0
                     while x < len(self.playlists):
                         # await ctx.send(f'**Playlist: ** ' + self.totalPlaylists[x])
                         embed.add_field(name="Playlist " + str(x + 1), value=self.totalPlaylists[x], inline=True)
@@ -618,18 +635,32 @@ class MusicCommands(commands.Cog):
             else:
                 try:
                     self.totalPlaylists.append(playlist)
+
+                    file = open('playlists.csv', 'w')
+                    with file:
+                        writer = csv.DictWriter(file, fieldnames=self.totalPlaylists)
+                       # writer.writerow(self.totalPlaylists[0])
+                        writer.writeheader()
+                    file2 = open('allplaylists.csv','w')
+                    with file2:
+                        field = ['playlists:']
+                        writing = csv.DictWriter(file2, fieldnames=field)
+                        writing.writeheader()
+                        writing2 = csv.writer(file2)
+                        writing2.writerow(self.totalPlaylists)
+
+                    #    x = 0
+                     #   while x < len(self.totalPlaylists):
+                      #      writing2.writerow(self.totalPlaylists[x])
+                       #     x += 1
+
                     playlist = [playlist]
                     x = 0
                     while len(playlist) > 0:
                         playlist.__delitem__(x)
                         x += 1
                     self.playlists.append(playlist)
-                  #  file = open('playlists.csv', 'a')
-                  #  with file:
-                        #csv_writer = csv.writer(file,delimiter=', ')
-                     #   writer = csv.DictWriter('playlists.csv', fieldnames=self.totalPlaylists)
-                        #csv_writer.writerow(str(self.totalPlaylists[len(self.totalPlaylists) - 1]))
-                      #  writer.writeheader()
+
                     await ctx.send("**Playlist created!**")
                 except:
                     # await ctx.send("**Could not create playlist**")
@@ -652,9 +683,11 @@ class MusicCommands(commands.Cog):
                     if not ("watch?v=" in url):
                         await ctx.send("Can't find result from Youtube")
                         return
-            #   with open('playlists.csv', 'w') as csv_file:
-            #       csv_writer = csv.writer(csv_file, delimiter='\n')
-            #       csv_writer.writerow(url)
+            with open('playlists.csv', 'a') as csv_file:
+                writer = csv.writer(csv_file, delimiter='\n')
+                title = await YTDLSources.from_url(url, loop=bot.loop)
+                writer.writerow({playlist: title})
+
             if connected:
                 try:
                     if self.totalPlaylists.__contains__(playlist):
@@ -805,23 +838,7 @@ class MusicCommands(commands.Cog):
                 )
                 return await ctx.send(embed=embed)
 
-        def savedPlaylists():
-            file = open('playlists.csv', 'a')
-            with file:
 
-               # csv_writer = csv.writer(file, delimiter='|')
-                Writer = csv.DictWriter(file, fieldnames=self.totalPlaylists)
-                #csv_writer.writerow(str(playlist))
-                Writer.writeheader()
-                #writer = csv.DictWriter('playlists.csv', fieldnames=self.totalPlaylists)
-                #writer.writeheader()
-
-                #  writer = csv.writer(csv_file, delimiter=', ')
-                #  writer.writerow(self.totalPlaylists)
-
-                for i in range(0, len(self.totalPlaylists)):
-                    for j in range(0, len(self.playlists[i])):
-                        Writer.writerow({self.totalPlaylists[i]: self.playlists[i][j]})
 
         @bot.command(name='viewplaylist', help=helpMessages.VIEW_PLAYLIST)
         async def viewplaylist(ctx, playlist):
@@ -831,14 +848,18 @@ class MusicCommands(commands.Cog):
                 color=discord.Color.purple()
             )
             if 'playlists.csv' != None:
-                savedPlaylists()
-                with open('playlists.csv') as myFile:
-                    reader = csv.DictReader(myFile)
+                #savedPlaylists()
+                file = open('playlists.csv','r')
+                with file:
+                    reader = csv.DictReader(file)
                     for row in reader:
-                        self.retained = (row[str(playlist)])
-                        print(self.retained)
+                        self.retained = (row[playlist])
+                    #    print(self.retained)
                         if self.retained is not None:
                             #self.totalPlaylists.append(self.retained[0])
+                            #if self.playlists.__contains__(self.retained):
+                             #   break
+                            #else:
                             self.playlists.append(self.retained)
             try:
                 if self.totalPlaylists.__contains__(playlist):
