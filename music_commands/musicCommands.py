@@ -177,9 +177,9 @@ class MusicCommands(commands.Cog):
                     voice_channel = server.voice_client
                     filename, title = await YTDLSources.from_url(self.history[int(num) - 1], loop=bot.loop)
                     voice_channel.play(
-                        discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                    # discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",
-                    #                      source=filename))
+                        #discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                     discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",
+                                         source=filename))
                     embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
                     return
@@ -261,8 +261,8 @@ class MusicCommands(commands.Cog):
                     voice_channel = server.voice_client
                     filename, title = await YTDLSources.from_url(self.queue[0], loop=bot.loop)
                     voice_channel.play(
-                        discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                    #      discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
+                        #discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                        discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg", source=filename))
                     embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
                 # del (self.queue[0])
@@ -292,9 +292,9 @@ class MusicCommands(commands.Cog):
 
                     filename, title = await YTDLSources.from_url(self.history[0], loop=bot.loop)
                     voice_channel.play(
-                        discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
-                    # discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",
-                    #   source=filename))
+                        # discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source=filename))
+                     discord.FFmpegPCMAudio(executable="/usr/local/Cellar/ffmpeg/4.3.2_4/bin/ffmpeg",
+                       source=filename))
                     embed.add_field(name="YouTube", value=title, inline=True)
                     await ctx.send(embed=embed)
             except:
